@@ -1,0 +1,59 @@
+﻿@using B2BPortal.Infrastructure
+@using AzureB2BInvite
+@{ 
+    var siteName = (Settings.CurrSiteConfig != null && !string.IsNullOrEmpty(Settings.CurrSiteConfig.InvitingOrg)) ? Settings.CurrSiteConfig.InvitingOrg : "B2B Portal";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - @siteName</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @RenderSection("styles", required: false)
+
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink(siteName, "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Sign Up", "Index", "Home", new { area = "" }, new { })</li>
+                    <li>@Html.ActionLink("About", "About", "Home", new { area = "" }, new { })</li>
+                    <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, new { })</li>
+                    @if (User.Identity.IsInAnyRole(AdalUtil.Settings.InviterRoleNames))
+                    {
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="@Url.Action("Index", "Home", new { area="admin" })"><span class='glyphicon glyphicon-ok pull-left'></span> Approve Requests</a></li>
+                            <li><a href="@Url.Action("Index", "PreApproval", new { area="admin" })"><span class='glyphicon glyphicon-heart pull-left'></span> Manage Domains</a></li>
+                            <li><a href="@Url.Action("Index", "InviteTemplate", new { area="admin" })"><span class='glyphicon glyphicon-envelope pull-left'></span> Manage Mail Templates</a></li>
+                            <li class="divider"></li>
+                            <li><a href="@Url.Action("Index", "SiteConfig", new { area="admin" })"><span class='glyphicon glyphicon-cog pull-left'></span> Site Config</a></li>
+                        </ul>
+                    </li>
+                    }
+                </ul>
+                @Html.Partial("_LoginPartial")
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

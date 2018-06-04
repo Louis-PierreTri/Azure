@@ -1,0 +1,140 @@
+﻿@using B2BPortal.Infrastructure
+@model B2BPortal.Models.SiteConfig
+
+@{
+    ViewBag.Title = "Site Configuration";
+    ViewBag.RedemptionPropertyName = "SiteRedemptionSettings";
+
+    var _templates = new List<SelectListItem>();
+
+    if (ViewBag.Templates != null)
+    {
+        _templates = (List<SelectListItem>)ViewBag.Templates;
+    }
+
+}
+
+@using (Html.BeginForm("Save", "SiteConfig", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div class="panel panel-primary" style="margin-top:20px;">
+        <div class="panel-title panel-heading">
+            Edit Site Configuration
+        </div>
+        <div class="panel-body">
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.Id)
+                @Html.HiddenFor(model => model.ConfigVersion)
+                <div class="form-group control">
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-default control"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
+                        <button id="btnCancel" type="button" class="btn btn-default control"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
+                    </div>
+                </div>
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        @ViewBag.Error
+                    </div>
+                }
+
+                <div class="form-group">
+                    <div class="col-md-6">
+                        @Html.LabelFor(model => model.SiteName, htmlAttributes: new { @class = "control-label addHelp" })
+
+                        @Html.EditorFor(model => model.SiteName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.SiteName, "", new { @class = "text-danger" })
+                        <div class="notes">
+                            Name that will be displayed on the front page and in invitation emails (like "My Org Name Guest Enrollment").
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @Html.LabelFor(model => model.InvitingOrg, htmlAttributes: new { @class = "control-label addHelp" })
+                        @Html.EditorFor(model => model.InvitingOrg, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.InvitingOrg, "", new { @class = "text-danger" })
+                        <div class="notes">
+                            Name that will be displayed in the site title and in other areas that identify the org name.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-6">
+                        @Html.LabelFor(model => model.WelcomeMessage, htmlAttributes: new { @class = "control-label addHelp" })
+                        @Html.TextAreaFor(model => model.WelcomeMessage, htmlAttributes: new { @rows = "7", @class = "form-control" })
+                        <div class="notes">
+                            Brief text narrative explaining the purpose of the site, apps that might be made available,
+                            instructions, rules, etc. Optional. Plain text only.
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @Html.LabelFor(model => model.TOSDocument, htmlAttributes: new { @class = "control-label addHelp" })
+                        @Html.TextAreaFor(model => model.TOSDocument, htmlAttributes: new { @rows = "5", @class = "form-control" })
+                        <div class="input-group" style="margin-top:6px;">
+                            <span class="input-group-addon">
+                                @Html.EditorFor(model => model.RequireTOSAgreement)
+                            </span>
+                            @Html.LabelFor(model => model.RequireTOSAgreement, htmlAttributes: new { @class = "form-control", @id = "lblRequireTOSAgreement" })
+                        </div>
+                        @Html.ValidationMessageFor(model => model.RequireTOSAgreement, "", new { @class = "text-danger" })
+                        <div class="notes">
+                            Terms of Service for guest access. Basic HTML or plain text acceptable (SCRIPT and other risky tags will be removed).
+                            If "Require TOS Agreement" is checked, users will only be able to proceed if they have checked to confirm their
+                            agreement with the Terms of Service.
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-6">
+                        @Html.LabelFor(model => model.InviteTemplateId, htmlAttributes: new { @class = "control-label addHelp" })
+                        @Html.DropDownListFor(model => model.InviteTemplateId, _templates, "Select email template...", new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.InviteTemplateId, "", new { @class = "text-danger" })
+                        <div class="notes">
+                            (optional) - Select an invitation template.
+                            @if (Settings.UseSMTP)
+                            {
+                                <div id="divUseSmtp">
+                                    This template will be used to create the invitation message that is emailed.
+                                    Use the "Manage Mail Templates" admin tool to create and manage templates.
+                                </div>
+                            }
+                            else
+                            {
+                                <div id="divUseApi">
+                                    This text will be added to the default B2B invitation email sent by Azure Active
+                                    Directory to your approved guests. Use the "Manage Mail Templates" admin tool
+                                    to create and manage templates.
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.Partial("_editRedemptionSettings", Model.SiteRedemptionSettings)
+}
+@section scripts {
+    <script type="text/javascript">
+        $(function () {
+            $("#").on("change", function () {
+
+            });
+
+            $("#btnCancel").on("click", function () {
+                location.href = "/admin/";
+            });
+        });
+    </script>
+}
+@section styles {
+    <style type="text/css">
+        div.redemption input,
+        div.redemption label {
+            max-width:none;
+        }
+    </style>    
+}

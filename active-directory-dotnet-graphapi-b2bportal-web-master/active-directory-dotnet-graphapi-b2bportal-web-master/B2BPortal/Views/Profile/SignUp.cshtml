@@ -1,0 +1,26 @@
+﻿@using AzureB2BInvite.Models
+@using B2BPortal.Interfaces
+@model GuestRequest
+
+@{
+    ViewBag.Title = "Sign Up";
+}
+
+<h2>Thanks for Signing Up</h2>
+
+@if (Model.Disposition == Disposition.Pending)
+{
+    <div>Your request is being processed. Your request ID is "@Model.Id".</div>
+}
+else
+{
+    <div>
+        <p>
+            If approved, your invitation email will be sent to "@Model.EmailAddress". Follow the instructions in the email to redeem your invitation.
+        </p>
+        <p>
+            Your request has been @Model.Disposition.ToString().<br />
+            Your request ID is "@Model.Id".
+        </p>
+    </div>
+}
